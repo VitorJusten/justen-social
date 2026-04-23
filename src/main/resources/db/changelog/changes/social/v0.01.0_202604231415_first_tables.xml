@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+	<changeSet id="v0.01.0" author="Vitor Justen">
+		<comment>First tables</comment>
+		<sql>
+			<![CDATA[
+			
+				-- =========================================
+				-- TABELA: post
+				-- =========================================
+				
+				CREATE TABLE post (
+				
+				    post_cd_id UUID PRIMARY KEY,
+				
+				    post_cd_author UUID NOT NULL,
+				
+				    post_tx_title VARCHAR(150) NOT NULL,
+				
+				    post_tx_description TEXT,
+				
+				    post_nm_published BOOLEAN DEFAULT FALSE NOT NULL,
+				
+				    post_nm_highlight BOOLEAN DEFAULT FALSE NOT NULL,
+				
+				    post_dt_created_at TIMESTAMP NOT NULL,
+				
+				    post_dt_updated_at TIMESTAMP
+				
+				);
+				
+				
+				-- =========================================
+				-- TABELA: post_media
+				-- alias: pome
+				-- =========================================
+				
+				CREATE TABLE post_media (
+				
+				    pome_cd_id UUID PRIMARY KEY,
+				
+				    post_cd_id UUID NOT NULL REFERENCES post(post_cd_id),
+				
+				    pome_by_content BYTEA
+				
+				);
+				
+				
+				-- =========================================
+				-- TABELA: post_media_type
+				-- alias: pomt
+				-- =========================================
+				
+				CREATE TABLE post_media_type (
+				
+				    pomt_cd_id UUID PRIMARY KEY,
+				
+				    pomt_tx_name VARCHAR(50) NOT NULL UNIQUE
+				
+				);
+				
+				
+				-- =========================================
+				-- TABELA: post_media_post_media_type
+				-- alias: pmpt
+				-- =========================================
+				
+				CREATE TABLE post_media_post_media_type (
+				
+				    pmpt_cd_post_media UUID NOT NULL,
+				
+				    pmpt_cd_post_media_type UUID NOT NULL,
+				
+				    CONSTRAINT pk_pmpt
+				        PRIMARY KEY (pmpt_cd_post_media, pmpt_cd_post_media_type),
+				
+				    CONSTRAINT fk_pmpt_pome
+				        FOREIGN KEY (pmpt_cd_post_media)
+				        REFERENCES post_media(pome_cd_id),
+				
+				    CONSTRAINT fk_pmpt_pomt
+				        FOREIGN KEY (pmpt_cd_post_media_type)
+				        REFERENCES post_media_type(pomt_cd_id)
+				
+				);
+				
+				
+				-- =========================================
+				-- DEFAULT TYPES
+				-- =========================================
+				
+				INSERT INTO post_media_type (pomt_cd_id, pomt_tx_name) VALUES
+				('8a8f4c5c-0b9c-4b41-9c9e-2c6b9f7d4e0a', 'IMAGE'),
+				('3f2e6c1d-9a8b-4c0e-b7f4-5d2a7e8c1b6f', 'TEXT'),
+				('b7a1d4c9-2f5e-4a3b-8c6d-1e9f0a2b3c4d', 'VIDEO'),
+				('5c9e2b7a-4f1d-4e8a-b6c3-7a0d9f2e1b5c', 'DOCUMENT'),
+				('d1e3f7a9-6b4c-4d2a-9e8f-3c1b5a7d0e2f', 'URL');
+				
+				
+				-- =========================================
+				-- INDEXES
+				-- =========================================
+				
+				CREATE INDEX idx_post_author
+				ON post(post_cd_author);
+				
+				CREATE INDEX idx_post_created
+				ON post(post_dt_created_at DESC);
+				
+				CREATE INDEX idx_pome_post
+				ON post_media(pome_cd_post_id);
+			
+			]]>
+		</sql>
+
+		<rollback>
+		</rollback>
+
+	</changeSet>
+
+</databaseChangeLog>

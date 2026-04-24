@@ -1,61 +1,60 @@
 package com.justen.social.api.security.config;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * 
- * @Author GitHub - VitorJusten
- * @ProjectName justen-social
- * @Year 2026
- *
- */
+import lombok.AllArgsConstructor;
+
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-	private static final String[] WHITE_LIST = { "/actuator/**", "/v3/api-docs/**" };
+    private final CorsConfig corsConfig;
 
-	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    private static final String[] WHITE_LIST = {
+        "/actuator/**",
+        "/v3/api-docs/**",
+        "/swagger-ui/**"
+    };
 
-		http.authorizeHttpRequests(auth -> auth.requestMatchers(WHITE_LIST).permitAll().anyRequest().authenticated())
-				.oauth2ResourceServer(
-						oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		return http.build();
-	}
+        corsConfig.corsCustomizer(http);
 
-	private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        http
+            .csrf(csrf -> csrf.disable())
 
-		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(WHITE_LIST).permitAll()
+                    .anyRequest().authenticated()
+            )
 
-		converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            .oauth2ResourceServer(oauth -> oauth
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            );
 
-			JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        return http.build();
+    }
 
-			Collection<GrantedAuthority> authorities = authoritiesConverter.convert(jwt);
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
 
-			List<String> roles = jwt.getClaimAsStringList("roles");
+        JwtGrantedAuthoritiesConverter authoritiesConverter =
+                new JwtGrantedAuthoritiesConverter();
 
-			if (roles != null) {
-				authorities.addAll(roles.stream().map(SimpleGrantedAuthority::new).toList());
-			}
+        authoritiesConverter.setAuthorityPrefix("");
+        authoritiesConverter.setAuthoritiesClaimName("roles");
 
-			return authorities;
-		});
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
 
-		return converter;
-	}
+        return converter;
+    }
 
 }

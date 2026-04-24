@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.justen.social.domain.model.entity.Post;
+import com.justen.social.domain.repository.custom.PostRepositoryCustom;
 
 /**
  * 
@@ -13,6 +14,6 @@ import com.justen.social.domain.model.entity.Post;
  * @Year 2026
  *
  */
-public interface PostRepository extends JpaRepository<Post, UUID> {
+public interface PostRepository extends JpaRepository<Post, UUID>, PostRepositoryCustom  {
 
 }

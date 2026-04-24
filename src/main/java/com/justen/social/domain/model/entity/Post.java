@@ -1,13 +1,18 @@
 package com.justen.social.domain.model.entity;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,7 +37,7 @@ public class Post {
 	private UUID id;
 
 	@Column(name = "post_cd_author", nullable = false)
-	private UUID author;
+	private UUID authorId;
 
 	@Column(name = "post_tx_title", nullable = false, length = 150)
 	private String title;
@@ -41,15 +46,24 @@ public class Post {
 	private String description;
 
 	@Column(name = "post_nm_published", nullable = false)
-	private Boolean published;
+	private Boolean published = false;
 
 	@Column(name = "post_nm_highlight", nullable = false)
-	private Boolean highlight;
+	private Boolean highlight = false;
 
 	@Column(name = "post_dt_created_at", nullable = false)
-	private LocalDateTime createdAt;
+	private OffsetDateTime createdAt;
 
 	@Column(name = "post_dt_updated_at")
-	private LocalDateTime updatedAt;
+	private OffsetDateTime updatedAt;
+	
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Column(name = "post_by_content", nullable = false)
+	private byte[] content;
+
+	@ManyToOne
+	@JoinColumn(name = "pomt_cd_id")
+	private MediaType mediaType;
 
 }

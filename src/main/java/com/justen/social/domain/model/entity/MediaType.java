@@ -1,7 +1,5 @@
 package com.justen.social.domain.model.entity;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -9,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "post_media_type")
-public class PostMediaType {
+public class MediaType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,8 +32,5 @@ public class PostMediaType {
 
     @Column(name = "pomt_tx_name", nullable = false, unique = true)
     private String name;
-
-    @ManyToMany(mappedBy = "types")
-    private Set<PostMedia> media = new HashSet<>();
 
 }

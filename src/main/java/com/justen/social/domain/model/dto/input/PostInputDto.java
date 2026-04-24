@@ -1,0 +1,32 @@
+package com.justen.social.domain.model.dto.input;
+
+import com.justen.social.domain.model.entity.Post;
+
+import lombok.Data;
+
+/**
+ * 
+ * @Author GitHub - VitorJusten
+ * @ProjectName justen-social
+ * @Year 2026
+ *
+ */
+@Data
+public class PostInputDto {
+
+	private String title;
+	private String description;
+	private byte[] content;
+
+	public Post toEntity() {
+
+		Post post = new Post();
+
+		post.setTitle(title);
+		post.setDescription(description);
+		post.setContent(content);
+
+		return post;
+	}
+
+}

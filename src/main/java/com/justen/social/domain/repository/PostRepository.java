@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.justen.social.domain.model.entity.Post;
+import com.justen.social.domain.model.Post;
 import com.justen.social.domain.repository.custom.PostRepositoryCustom;
 
 /**

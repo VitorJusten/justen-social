@@ -9,9 +9,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com.justen.social.core.dto.MediaTypeDto;
+import com.justen.social.core.dto.PostDto;
 import com.justen.social.core.utils.DateUtils;
-import com.justen.social.domain.model.dto.MediaTypeDto;
-import com.justen.social.domain.model.dto.PostDto;
 import com.justen.social.domain.repository.custom.PostRepositoryCustom;
 
 import jakarta.persistence.EntityManager;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.justen.social.domain.model.dto.PostDto;
-import com.justen.social.domain.model.dto.input.PostInputDto;
+import com.justen.social.core.dto.PostDto;
+import com.justen.social.core.dto.input.PostInputDto;
 import com.justen.social.domain.service.PostService;
 
 import lombok.AllArgsConstructor;

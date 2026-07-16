@@ -8,10 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.justen.social.core.dto.PostDto;
 import com.justen.social.core.utils.SecurityUtils;
 import com.justen.social.domain.exception.EntityNotFoundException;
-import com.justen.social.domain.model.dto.PostDto;
-import com.justen.social.domain.model.entity.Post;
+import com.justen.social.domain.model.Post;
 import com.justen.social.domain.repository.PostRepository;
 
 import lombok.AllArgsConstructor;

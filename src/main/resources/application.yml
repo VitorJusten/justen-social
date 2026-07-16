@@ -21,15 +21,9 @@ spring:
       ddl-auto: none
     show-sql: ${JPA_SHOW_SQL:false}
 
-security:
-
-  oauth2:
-    resourceserver:
-      jwt:
-        issuer-uri: ${AUTH_ISSUER:http://localhost:8081}
-
-app:
-
-  cors:
-    allowed-origins:
-      - ${APP_CORS_ORIGIN:http://localhost:3000}
+  auth:
+    expiration: 900
+    refresh-expiration: 604800
+    issuer: justen-auth
+    audience: justen-api
+    defaultPassword: justen@123

@@ -48,8 +48,8 @@ public class Post {
 	@Column(name = "post_nm_published", nullable = false)
 	private Boolean published = false;
 
-	@Column(name = "post_nm_highlight", nullable = false)
-	private Boolean highlight = false;
+	@Column(name = "post_nm_fixed", nullable = false)
+	private Boolean fixed = false;
 
 	@Column(name = "post_dt_created_at", nullable = false)
 	private OffsetDateTime createdAt;

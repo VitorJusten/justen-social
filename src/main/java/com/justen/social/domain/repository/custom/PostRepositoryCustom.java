@@ -22,12 +22,4 @@ public interface PostRepositoryCustom {
 	 */
     Page<PostDto> findAllPosts(Pageable pageable, String filters);
 
-    /**
-     * 
-     * @param pageable
-     * @param filters
-     * @return
-     */
-    Page<PostDto> findUnpublishedPosts(Pageable pageable, String filters);
-
 }

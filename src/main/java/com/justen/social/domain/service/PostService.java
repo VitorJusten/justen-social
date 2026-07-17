@@ -46,11 +46,7 @@ public class PostService {
     public Page<PostDto> getAll(Pageable pageable, String filters) {
         return postRepository.findAllPosts(pageable, filters);
     }
-
-    public Page<PostDto> getUnpublished(Pageable pageable, String filters) {
-        return postRepository.findUnpublishedPosts(pageable, filters);
-    }
-
+    
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);

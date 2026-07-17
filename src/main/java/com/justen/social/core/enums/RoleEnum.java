@@ -20,4 +20,5 @@ public enum RoleEnum {
 	COLLECTOR("COLLECTOR");
 
 	private String name;
+
 }

@@ -46,12 +46,6 @@ public class PostController {
 		return postService.getAll(pageable, filters);
 	}
 
-	@GetMapping("/unpublished")
-	public Page<PostDto> getUnpublished(Pageable pageable, @RequestParam(required = false) String filters) {
-
-		return postService.getUnpublished(pageable, filters);
-	}
-
 	@PutMapping("/{id}")
 	public PostDto update(@PathVariable UUID id, @RequestBody PostInputDto input) {
 

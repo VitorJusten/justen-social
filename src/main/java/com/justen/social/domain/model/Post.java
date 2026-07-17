@@ -36,8 +36,8 @@ public class Post {
 	@Column(name = "post_cd_id")
 	private UUID id;
 
-	@Column(name = "post_cd_author", nullable = false)
-	private UUID authorId;
+	@Column(name = "usac_tx_username", nullable = false)
+	private String authorName;
 
 	@Column(name = "post_tx_title", nullable = false, length = 150)
 	private String title;

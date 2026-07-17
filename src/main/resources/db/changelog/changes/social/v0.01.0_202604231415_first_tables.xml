@@ -45,7 +45,7 @@
 				
 				    post_cd_id UUID PRIMARY KEY,
 				
-				    post_cd_author UUID NOT NULL,
+				    usac_tx_username TEXT NOT NULL,
 				
 				    post_tx_title VARCHAR(150) NOT NULL,
 				
@@ -53,7 +53,7 @@
 				
 				    post_nm_published BOOLEAN DEFAULT FALSE NOT NULL,
 				
-				    post_nm_highlight BOOLEAN DEFAULT FALSE NOT NULL,
+				    post_nm_fixed BOOLEAN DEFAULT FALSE NOT NULL,
 				
 				    post_dt_created_at TIMESTAMP NOT NULL,
 				
@@ -70,7 +70,7 @@
 				-- =========================================
 				
 				CREATE INDEX idx_post_author
-				ON post(post_cd_author);
+				ON post(usac_tx_username);
 				
 				CREATE INDEX idx_post_created
 				ON post(post_dt_created_at DESC);

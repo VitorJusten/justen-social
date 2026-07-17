@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class PostDto {
 
 	private UUID id;
-    private UUID authorId;
+    private String authorName;
     private String title;
     private String description;
     private Boolean published;
@@ -32,7 +32,7 @@ public class PostDto {
     public PostDto(Post post) {
 
         this.id = post.getId();
-        this.authorId = post.getAuthorId();
+        this.authorName = post.getAuthorName();
         this.title = post.getTitle();
         this.description = post.getDescription();
         this.published = post.getPublished();

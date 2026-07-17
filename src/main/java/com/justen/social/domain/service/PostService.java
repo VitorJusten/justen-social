@@ -31,7 +31,7 @@ public class PostService {
     private final SecurityUtils securityUtils;
 
     public Post create(Post post) {
-    	post.setAuthorId(UUID.fromString(securityUtils.getLoggedUserId()));
+    	post.setAuthorName(securityUtils.getLoggedUsername());
         post.setCreatedAt(OffsetDateTime.now());
 
         return postRepository.save(post);

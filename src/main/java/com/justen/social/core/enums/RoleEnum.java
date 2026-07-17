@@ -1,4 +1,4 @@
-package com.justen.auth.core.enums;
+package com.justen.social.core.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,10 +12,12 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum CredentialTypeEnum {
-	EMAIL(".*"),
-	PHONE(".*"),
-	STEAMID("^[0-9]{17}$");
+public enum RoleEnum {
 
-	private String regexFromat;
+	DEV("DEV"),
+	ADM("ADM"),
+	AUTHOR("AUTHOR"),
+	COLLECTOR("COLLECTOR");
+
+	private String name;
 }

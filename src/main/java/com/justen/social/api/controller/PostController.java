@@ -46,6 +46,19 @@ public class PostController {
 
 		return postService.getAll(pageable, filters);
 	}
+	
+	@GetMapping("/by-user")
+	public Page<PostSummaryDto> getAllByUser(Pageable pageable, @RequestParam(required = false) String authorName) {
+		
+		return postService.getAllByUser(pageable, authorName);
+	}
+	
+	@GetMapping("/self")
+	public Page<PostSummaryDto> getMyPosts(Pageable pageable) {
+		
+		return postService.getMyPosts(pageable);
+	}
+	
 
 	@PutMapping("/{id}")
 	public PostDto update(@PathVariable UUID id, @RequestBody PostInputDto input) {

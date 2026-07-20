@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.justen.social.core.dto.PostSummaryDto;
 import com.justen.social.domain.model.Post;
@@ -30,7 +31,26 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 				FROM Post p
 				LEFT JOIN FETCH p.medias m
 				LEFT JOIN FETCH m.mediaType
+				WHERE p.published IS TRUE
+				ORDER BY p.fixed DESC, p.createdAt DESC
 			""")
     Page<PostSummaryDto> findAllPosts(Pageable pageable, String filters);
+	
+	/**
+	 * 
+	 * @param pageable
+	 * @param username
+	 * @return
+	 */
+	@Query("""
+			SELECT DISTINCT p
+				FROM Post p
+				LEFT JOIN FETCH p.medias m
+				LEFT JOIN FETCH m.mediaType
+				WHERE p.published IS TRUE
+				AND p.authorName = :paramAuthor
+				ORDER BY p.fixed DESC, p.createdAt DESC
+			""")
+	Page<PostSummaryDto> findAllPostsByUser(Pageable pageable, @Param(value = "paramAuthor") String authorName);
 	
 }

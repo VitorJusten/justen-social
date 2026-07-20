@@ -48,6 +48,14 @@ public class PostService {
         return postRepository.findAllPosts(pageable, filters);
     }
     
+    public Page<PostSummaryDto> getAllByUser(Pageable pageable, String authorName) {
+    	return postRepository.findAllPostsByUser(pageable, authorName);
+    }
+    
+	public Page<PostSummaryDto> getMyPosts(Pageable pageable) {
+		return postRepository.findAllPostsByUser(pageable, securityUtils.getLoggedUsername());
+	}
+    
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);

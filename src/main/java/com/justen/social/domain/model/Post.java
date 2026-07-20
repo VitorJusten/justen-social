@@ -43,7 +43,7 @@ public class Post {
 	private String title;
 
 	@Column(name = "post_tx_description")
-	private String description; //artigo!
+	private String description;
 
 	@Column(name = "post_nm_published", nullable = false)
 	private Boolean published = false;

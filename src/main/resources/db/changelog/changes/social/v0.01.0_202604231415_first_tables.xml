@@ -13,15 +13,14 @@
 			
 			
 				-- =========================================
-				-- TABELA: post_media_type
-				-- alias: pomt
+				-- TABELA: media_type
 				-- =========================================
 				
-				CREATE TABLE post_media_type (
+				CREATE TABLE media_type (
 				
-				    pomt_cd_id UUID PRIMARY KEY,
+				    mety_cd_id UUID PRIMARY KEY,
 				
-				    pomt_tx_name VARCHAR(50) NOT NULL UNIQUE
+				    mety_tx_name VARCHAR(50) NOT NULL UNIQUE
 				
 				);
 				
@@ -29,12 +28,10 @@
 				-- DEFAULT TYPES
 				-- =========================================
 				
-				INSERT INTO post_media_type (pomt_cd_id, pomt_tx_name) VALUES
+				INSERT INTO media_type (mety_cd_id, mety_tx_name) VALUES
 				('8a8f4c5c-0b9c-4b41-9c9e-2c6b9f7d4e0a', 'IMAGE'),
-				('3f2e6c1d-9a8b-4c0e-b7f4-5d2a7e8c1b6f', 'TEXT'),
 				('b7a1d4c9-2f5e-4a3b-8c6d-1e9f0a2b3c4d', 'VIDEO'),
-				('5c9e2b7a-4f1d-4e8a-b6c3-7a0d9f2e1b5c', 'DOCUMENT'),
-				('d1e3f7a9-6b4c-4d2a-9e8f-3c1b5a7d0e2f', 'URL');
+				('5c9e2b7a-4f1d-4e8a-b6c3-7a0d9f2e1b5c', 'FILE');
 				
 			
 				-- =========================================
@@ -50,6 +47,8 @@
 				    post_tx_title VARCHAR(150) NOT NULL,
 				
 				    post_tx_description TEXT,
+				    
+				    post_bt_thumb BYTEA NOT NULL,
 				
 				    post_nm_published BOOLEAN DEFAULT FALSE NOT NULL,
 				
@@ -57,11 +56,23 @@
 				
 				    post_dt_created_at TIMESTAMP NOT NULL,
 				
-				    post_dt_updated_at TIMESTAMP,
+				    post_dt_updated_at TIMESTAMP
 				    
-				    post_by_content BYTEA NOT NULL,
+				);
+				
+				-- =========================================
+				-- TABELA: media
+				-- =========================================
+				
+				CREATE TABLE media (
+				
+				    medi_cd_id UUID PRIMARY KEY,
+				
+				    medi_bt_content BYTEA NOT NULL,
 				    
-				    pomt_cd_id UUID NOT NULL REFERENCES post_media_type(pomt_cd_id)
+				    mety_cd_id UUID NOT NULL REFERENCES media_type(mety_cd_id),
+				    
+				    post_cd_id UUID NOT NULL REFERENCES post(post_cd_id)
 				
 				);
 				

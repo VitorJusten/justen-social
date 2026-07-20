@@ -1,5 +1,6 @@
 package com.justen.social.core.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,18 +37,29 @@ public class SecurityUtils {
 	}
 
 	public UUID getLoggedUserId() {
-		return UUID.fromString(getJwt().getSubject());
+		try {
+			return UUID.fromString(getJwt().getSubject());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public String getLoggedUsername() {
-		return getJwt().getClaimAsString("username");
+		try {
+			return getJwt().getClaimAsString("username");
+
+		} catch (Exception e) {
+			return "";
+		}
 	}
 
 	public List<String> getLoggedUserRoles() {
-		return getAuthentication().getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
-				.map(role -> role.replace("ROLE_", ""))
-				.toList();
+		try {
+			return getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority)
+					.map(role -> role.replace("ROLE_", "")).toList();
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 	}
 
 	public void validateRoles(List<RoleEnum> roles) {

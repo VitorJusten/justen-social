@@ -21,16 +21,16 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "post_media_type")
+@Table(name = "media_type")
 public class MediaType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
-    @Column(name = "pomt_cd_id")
+    @Column(name = "mety_cd_id")
     private UUID id;
 
-    @Column(name = "pomt_tx_name", nullable = false, unique = true)
+    @Column(name = "mety_tx_name", nullable = false, unique = true)
     private String name;
 
 }

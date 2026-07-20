@@ -8,9 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.justen.social.core.dto.PostDto;
+import com.justen.social.core.dto.PostSummaryDto;
 import com.justen.social.core.utils.SecurityUtils;
 import com.justen.social.domain.exception.EntityNotFoundException;
+import com.justen.social.domain.model.Media;
 import com.justen.social.domain.model.Post;
 import com.justen.social.domain.repository.PostRepository;
 
@@ -33,7 +34,7 @@ public class PostService {
     public Post create(Post post) {
     	post.setAuthorName(securityUtils.getLoggedUsername());
         post.setCreatedAt(OffsetDateTime.now());
-
+        
         return postRepository.save(post);
     }
 
@@ -43,16 +44,23 @@ public class PostService {
                 .orElseThrow(() -> new EntityNotFoundException("postNotFound"));
     }
 
-    public Page<PostDto> getAll(Pageable pageable, String filters) {
+    public Page<PostSummaryDto> getAll(Pageable pageable, String filters) {
         return postRepository.findAllPosts(pageable, filters);
     }
     
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);
-
-        BeanUtils.copyProperties(postInput, post, "id", "createdAt");
         
+        BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "authorName");
+        
+        post.getMedias().clear();
+
+        for (Media media : postInput.getMedias()) {
+            media.setPost(post);
+            post.getMedias().add(media);
+        }
+
         post.setUpdatedAt(OffsetDateTime.now());
 
         return postRepository.save(post);
@@ -62,21 +70,21 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public Post publish(UUID id) {
+    public Post changeVisibility(UUID id, Boolean isPublic) {
 
         Post post = getById(id);
 
-        post.setPublished(true);
+        post.setPublished(isPublic);
         post.setUpdatedAt(OffsetDateTime.now());
 
         return postRepository.save(post);
     }
 
-    public Post pin(UUID id) {
+    public Post pin(UUID id, Boolean isPinned) {
 
         Post post = getById(id);
 
-        post.setHighlight(true);
+        post.setFixed(isPinned);
         post.setUpdatedAt(OffsetDateTime.now());
 
         return postRepository.save(post);

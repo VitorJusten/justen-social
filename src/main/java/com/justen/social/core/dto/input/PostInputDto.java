@@ -1,5 +1,9 @@
 package com.justen.social.core.dto.input;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.justen.social.domain.model.Media;
 import com.justen.social.domain.model.Post;
 
 import lombok.Data;
@@ -16,15 +20,26 @@ public class PostInputDto {
 
 	private String title;
 	private String description;
-	private byte[] content;
+	private Boolean published;
+	private Boolean fixed;
+	private byte[] thumbImage;
+	private List<MediaInputDto> medias;
 
 	public Post toEntity() {
 
 		Post post = new Post();
 
-		post.setTitle(title);
-		post.setDescription(description);
-		post.setContent(content);
+		post.setTitle(this.title);
+		post.setDescription(this.description);
+		post.setPublished(this.published);
+		post.setFixed(this.fixed);
+		post.setThumbImage(this.thumbImage);
+
+		List<Media> medias = new ArrayList<>(this.medias.stream().map(MediaInputDto::toEntity).toList());
+
+		medias.forEach(media -> media.setPost(post));
+
+		post.setMedias(medias);
 
 		return post;
 	}

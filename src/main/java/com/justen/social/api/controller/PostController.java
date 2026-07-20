@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.justen.social.core.dto.PostDto;
+import com.justen.social.core.dto.PostSummaryDto;
 import com.justen.social.core.dto.input.PostInputDto;
 import com.justen.social.domain.service.PostService;
 
@@ -41,7 +42,7 @@ public class PostController {
 	}
 
 	@GetMapping
-	public Page<PostDto> getAll(Pageable pageable, @RequestParam(required = false) String filters) {
+	public Page<PostSummaryDto> getAll(Pageable pageable, @RequestParam(required = false) String filters) {
 
 		return postService.getAll(pageable, filters);
 	}
@@ -58,15 +59,15 @@ public class PostController {
 	}
 
 	@PatchMapping("/{id}/publish")
-	public PostDto publish(@PathVariable UUID id) {
+	public PostDto changeVisibility(@PathVariable UUID id, @RequestParam Boolean isPublic) {
 
-		return new PostDto(postService.publish(id));
+		return new PostDto(postService.changeVisibility(id, isPublic));
 	}
 
 	@PatchMapping("/{id}/pin")
-	public PostDto pin(@PathVariable UUID id) {
+	public PostDto pin(@PathVariable UUID id, @RequestParam Boolean isPinned) {
 
-		return new PostDto(postService.pin(id));
+		return new PostDto(postService.pin(id, isPinned));
 	}
 
 }

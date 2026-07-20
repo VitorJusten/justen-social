@@ -19,20 +19,20 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class PostDto {
+public class PostSummaryDto {
 
 	private UUID id;
-	private String authorName;
-	private String title;
-	private String description; //artigo!
-	private Boolean published = false;
-	private Boolean fixed = false;
-	private OffsetDateTime createdAt;
-	private OffsetDateTime updatedAt;
+    private String authorName;
+    private String title;
+    private String description;
+    private Boolean published;
+    private Boolean fixed;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 	private byte[] thumbImage;
-	private List<MediaDto> medias;
+    private List<MediaSummaryDto> medias;
     
-    public PostDto(Post post) {
+    public PostSummaryDto(Post post) {
 
         this.id = post.getId();
         this.authorName = post.getAuthorName();
@@ -45,7 +45,7 @@ public class PostDto {
         this.thumbImage = post.getThumbImage();
         this.medias = post.getMedias()
                 .stream()
-                .map(MediaDto::new)
+                .map(MediaSummaryDto::new)
                 .collect(Collectors.toList());
 
     }

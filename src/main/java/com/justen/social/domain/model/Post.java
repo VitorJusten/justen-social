@@ -1,18 +1,18 @@
 package com.justen.social.domain.model;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -43,7 +43,7 @@ public class Post {
 	private String title;
 
 	@Column(name = "post_tx_description")
-	private String description;
+	private String description; //artigo!
 
 	@Column(name = "post_nm_published", nullable = false)
 	private Boolean published = false;
@@ -57,13 +57,11 @@ public class Post {
 	@Column(name = "post_dt_updated_at")
 	private OffsetDateTime updatedAt;
 	
-	@Lob
 	@Basic(fetch = FetchType.LAZY)
-	@Column(name = "post_by_content", nullable = false)
-	private byte[] content;
+	@Column(name = "post_bt_thumb", nullable = false)
+	private byte[] thumbImage;
 
-	@ManyToOne
-	@JoinColumn(name = "pomt_cd_id")
-	private MediaType mediaType;
-
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Media> medias;
+	
 }

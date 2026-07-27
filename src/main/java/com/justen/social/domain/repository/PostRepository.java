@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -52,5 +53,53 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 				ORDER BY p.fixed DESC, p.createdAt DESC
 			""")
 	Page<PostSummaryDto> findAllPostsByUser(Pageable pageable, @Param(value = "paramAuthor") String authorName);
+	
+	/**
+	 * 
+	 * @param postId
+	 */
+	@Modifying
+	@Query("""
+	    update Post p
+	       set p.likesCount = p.likesCount + 1
+	     where p.id = :postId
+	""")
+	void incrementLikes(UUID postId);
+
+	/**
+	 * 
+	 * @param postId
+	 */
+	@Modifying
+	@Query("""
+	    update Post p
+	       set p.likesCount = p.likesCount - 1
+	     where p.id = :postId
+	""")
+	void decrementLikes(UUID postId);
+
+	/**
+	 * 
+	 * @param postId
+	 */
+	@Modifying
+	@Query("""
+	    update Post p
+	       set p.commentsCount = p.commentsCount + 1
+	     where p.id = :postId
+	""")
+	void incrementComments(UUID postId);
+	
+	/**
+	 * 
+	 * @param postId
+	 */
+	@Modifying
+	@Query("""
+	    update Post p
+	       set p.commentsCount = p.commentsCount - 1
+	     where p.id = :postId
+	""")
+	void decrementComments(UUID postId);
 	
 }

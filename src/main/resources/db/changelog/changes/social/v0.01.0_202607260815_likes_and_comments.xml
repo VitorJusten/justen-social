@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v0.01.0" author="Vitor Justen">
+
+        <comment>Comments and likes</comment>
+
+        <sql>
+            <![CDATA[
+
+            ALTER TABLE post
+                ADD COLUMN post_nm_likes_count BIGINT NOT NULL DEFAULT 0;
+
+            ALTER TABLE post
+                ADD COLUMN post_nm_comments_count BIGINT NOT NULL DEFAULT 0;
+
+            CREATE TABLE comment (
+
+                comm_cd_id UUID NOT NULL,
+                post_cd_id UUID NOT NULL,
+                comm_cd_father UUID,
+                usac_tx_username VARCHAR(255) NOT NULL,
+                comm_tx_comment VARCHAR(2000) NOT NULL,
+                comm_dt_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                comm_dt_updated_at TIMESTAMP WITH TIME ZONE,
+
+                CONSTRAINT pk_comment
+                    PRIMARY KEY (comm_cd_id),
+
+                CONSTRAINT fk_comment_post
+                    FOREIGN KEY (post_cd_id)
+                    REFERENCES post(post_cd_id),
+
+                CONSTRAINT fk_comment_father
+                    FOREIGN KEY (comm_cd_father)
+                    REFERENCES comment(comm_cd_id)
+
+            );
+
+            CREATE INDEX idx_comment_post
+                ON comment(post_cd_id);
+
+            CREATE INDEX idx_comment_father
+                ON comment(comm_cd_father);
+
+            CREATE INDEX idx_comment_author
+                ON comment(usac_tx_username);
+
+            CREATE TABLE user_like (
+
+                post_cd_id UUID NOT NULL,
+                usac_tx_username VARCHAR(255) NOT NULL,
+                usli_dt_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+                CONSTRAINT pk_user_like
+                    PRIMARY KEY (post_cd_id, usac_tx_username),
+
+                CONSTRAINT fk_user_like_post
+                    FOREIGN KEY (post_cd_id)
+                    REFERENCES post(post_cd_id)
+
+            );
+
+            CREATE INDEX idx_user_like_post
+                ON user_like(post_cd_id);
+
+            CREATE INDEX idx_user_like_user
+                ON user_like(usac_tx_username);
+
+            ]]>
+        </sql>
+
+        <rollback>
+
+            <![CDATA[
+
+            DROP TABLE user_like;
+            DROP TABLE comment;
+
+            ALTER TABLE post
+                DROP COLUMN post_nm_likes_count;
+
+            ALTER TABLE post
+                DROP COLUMN post_nm_comments_count;
+
+            ]]>
+
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

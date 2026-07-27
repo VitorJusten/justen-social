@@ -60,7 +60,20 @@ public class Post {
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "post_bt_thumb", nullable = false)
 	private byte[] thumbImage;
+	
+    @Column(name = "post_nm_likes_count", nullable = false)
+    private Long likesCount = 0L;
 
+    @Column(name = "post_nm_comments_count", nullable = false)
+    private Long commentsCount = 0L;
+	
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserLike> likes;
+	
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> coments;
+	
 	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Media> medias;
 	

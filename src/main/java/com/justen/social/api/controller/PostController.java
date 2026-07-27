@@ -70,7 +70,7 @@ public class PostController {
 	public void delete(@PathVariable UUID id) {
 		postService.delete(id);
 	}
-
+	
 	@PatchMapping("/{id}/publish")
 	public PostDto changeVisibility(@PathVariable UUID id, @RequestParam Boolean isPublic) {
 

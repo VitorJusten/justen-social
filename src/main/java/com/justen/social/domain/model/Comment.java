@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -52,7 +53,7 @@ public class Comment {
     @JoinColumn(name = "comm_cd_father")
     private Comment commentFather;
 
-    @OneToMany(mappedBy = "commentFather")
+    @OneToMany(mappedBy = "commentFather", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies;
 
     @ManyToOne(fetch = FetchType.LAZY)

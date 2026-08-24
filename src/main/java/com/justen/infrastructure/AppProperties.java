@@ -71,6 +71,7 @@ public class AppProperties {
 		private String issuer;
 		private String audience;
 		private String defaultPassword;
+        private String origins;
 	}
 
 }

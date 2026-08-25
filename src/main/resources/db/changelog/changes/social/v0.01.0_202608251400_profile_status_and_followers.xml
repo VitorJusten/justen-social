@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v0.01.0_profile_status_and_followers" author="Vitor Justen">
+
+        <comment>Profile status and profile follow table</comment>
+
+        <sql>
+            <![CDATA[
+
+            -- =========================================
+            -- STATUS NA TABELA: profile
+            -- =========================================
+            ALTER TABLE profile
+                ADD COLUMN prof_tx_status VARCHAR(20) NOT NULL DEFAULT 'PUBLIC';
+
+            -- =========================================
+            -- TABELA: profile_follow
+            -- =========================================
+            CREATE TABLE profile_follow (
+                prfo_cd_id UUID PRIMARY KEY,
+                prof_cd_follower_id UUID NOT NULL,
+                prof_cd_followed_id UUID NOT NULL,
+                prfo_tx_status VARCHAR(20) NOT NULL,
+                prfo_dt_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                prfo_dt_updated_at TIMESTAMP WITH TIME ZONE,
+
+                CONSTRAINT uk_profile_follow
+                    UNIQUE (prof_cd_follower_id, prof_cd_followed_id),
+
+                CONSTRAINT fk_follow_follower
+                    FOREIGN KEY (prof_cd_follower_id)
+                    REFERENCES profile(prof_cd_id),
+
+                CONSTRAINT fk_follow_followed
+                    FOREIGN KEY (prof_cd_followed_id)
+                    REFERENCES profile(prof_cd_id)
+            );
+
+            CREATE INDEX idx_follow_follower
+                ON profile_follow(prof_cd_follower_id);
+
+            CREATE INDEX idx_follow_followed
+                ON profile_follow(prof_cd_followed_id);
+
+            CREATE INDEX idx_follow_status
+                ON profile_follow(prfo_tx_status);
+
+            ]]>
+        </sql>
+
+        <rollback>
+            <![CDATA[
+
+            DROP TABLE IF EXISTS profile_follow;
+
+            ALTER TABLE profile
+                DROP COLUMN IF EXISTS prof_tx_status;
+
+            ]]>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

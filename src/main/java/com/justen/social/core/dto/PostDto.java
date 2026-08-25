@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class PostDto {
 
 	private UUID id;
-	private String authorName;
+	private ProfileSummaryDto profile;
 	private String title;
 	private String description; //artigo!
 	private Boolean published = false;
@@ -35,7 +35,7 @@ public class PostDto {
     public PostDto(Post post) {
 
         this.id = post.getId();
-        this.authorName = post.getAuthorName();
+        this.profile = post.getProfile() != null ? new ProfileSummaryDto(post.getProfile()) : null;
         this.title = post.getTitle();
         this.description = post.getDescription();
         this.published = post.getPublished();

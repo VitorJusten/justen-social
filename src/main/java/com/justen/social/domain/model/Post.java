@@ -12,6 +12,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -36,8 +38,9 @@ public class Post {
 	@Column(name = "post_cd_id")
 	private UUID id;
 
-	@Column(name = "usac_tx_username", nullable = false)
-	private String authorName;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "prof_cd_id", nullable = false)
+	private Profile profile;
 
 	@Column(name = "post_tx_title", nullable = false, length = 150)
 	private String title;

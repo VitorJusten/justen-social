@@ -40,8 +40,9 @@ public class Comment {
     @Column(name = "comm_tx_comment", nullable = false, length = 2000)
     private String comment;
 
-    @Column(name = "usac_tx_username", nullable = false)
-    private String authorName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prof_cd_id", nullable = false)
+    private Profile profile;
 
     @Column(name = "comm_dt_created_at", nullable = false)
     private OffsetDateTime createdAt;

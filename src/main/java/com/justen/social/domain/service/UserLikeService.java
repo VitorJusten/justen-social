@@ -7,10 +7,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.justen.social.core.utils.SecurityUtils;
 import com.justen.social.domain.exception.BusinessException;
 import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Post;
+import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.model.UserLike;
 import com.justen.social.domain.repository.PostRepository;
 import com.justen.social.domain.repository.UserLikeRepository;
@@ -30,23 +30,24 @@ public class UserLikeService {
 
     private final UserLikeRepository userLikeRepository;
     private final PostRepository postRepository;
-    private final SecurityUtils securityUtils;
+    private final ProfileService profileService;
 
     @Transactional
     public UserLike like(UserLike userLike) {
 
         UUID postId = userLike.getId().getPostId();
-        String username = securityUtils.getLoggedUsername();
+        Profile profile = profileService.getMyProfile();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("postNotFound"));
 
-        if (userLikeRepository.existsByIdPostIdAndIdUsername(postId, username)) {
+        if (userLikeRepository.existsByIdPostIdAndIdProfileId(postId, profile.getId())) {
             throw new BusinessException("postAlreadyLiked");
         }
 
         userLike.setPost(post);
-        userLike.getId().setUsername(username);
+        userLike.setProfile(profile);
+        userLike.getId().setProfileId(profile.getId());
         userLike.setCreatedAt(OffsetDateTime.now());
 
         postRepository.incrementLikes(postId);
@@ -57,17 +58,17 @@ public class UserLikeService {
     @Transactional
     public void unlike(UUID postId) {
 
-        String username = securityUtils.getLoggedUsername();
+        Profile profile = profileService.getMyProfile();
 
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException("postNotFound");
         }
 
-        if (!userLikeRepository.existsByIdPostIdAndIdUsername(postId, username)) {
+        if (!userLikeRepository.existsByIdPostIdAndIdProfileId(postId, profile.getId())) {
             throw new BusinessException("postNotLiked");
         }
 
-        userLikeRepository.deleteByIdPostIdAndIdUsername(postId, username);
+        userLikeRepository.deleteByIdPostIdAndIdProfileId(postId, profile.getId());
         postRepository.decrementLikes(postId);
     }
 
@@ -82,8 +83,8 @@ public class UserLikeService {
 
     public boolean isLiked(UUID postId) {
 
-        String username = securityUtils.getLoggedUsername();
-        return userLikeRepository.existsByIdPostIdAndIdUsername(postId, username);
+        Profile profile = profileService.getMyProfile();
+        return userLikeRepository.existsByIdPostIdAndIdProfileId(postId, profile.getId());
     }
 
 }

@@ -20,17 +20,17 @@ public interface UserLikeRepository extends JpaRepository<UserLike, UserLikeId> 
 	/**
 	 * 
 	 * @param postId
-	 * @param username
+	 * @param profileId
 	 * @return
 	 */
-    boolean existsByIdPostIdAndIdUsername(UUID postId, String username);
+    boolean existsByIdPostIdAndIdProfileId(UUID postId, UUID profileId);
     
     /**
      * 
      * @param postId
-     * @param username
+     * @param profileId
      */
-    void deleteByIdPostIdAndIdUsername(UUID postId, String username);
+    void deleteByIdPostIdAndIdProfileId(UUID postId, UUID profileId);
 
     /**
      * 

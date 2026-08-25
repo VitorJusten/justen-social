@@ -23,7 +23,7 @@ public class UserLikeId implements Serializable {
     @Column(name = "post_cd_id")
     private UUID postId;
 
-    @Column(name = "usac_tx_username")
-    private String username;
+    @Column(name = "prof_cd_id")
+    private UUID profileId;
 
 }

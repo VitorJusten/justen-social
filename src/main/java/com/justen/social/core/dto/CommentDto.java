@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class CommentDto {
 
     private UUID id;
-    private String authorName;
+    private ProfileSummaryDto profile;
     private String comment;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
@@ -34,7 +34,7 @@ public class CommentDto {
     public CommentDto(Comment comment) {
 
         this.id = comment.getId();
-        this.authorName = comment.getAuthorName();
+        this.profile = comment.getProfile() != null ? new ProfileSummaryDto(comment.getProfile()) : null;
         this.comment = comment.getComment();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();

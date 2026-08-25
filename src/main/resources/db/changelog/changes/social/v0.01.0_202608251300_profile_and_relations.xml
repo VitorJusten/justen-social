@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v0.01.0_profile_and_relations" author="Vitor Justen">
+
+        <comment>Profile table and entity relationships</comment>
+
+        <sql>
+            <![CDATA[
+
+            -- =========================================
+            -- TABELA: profile
+            -- =========================================
+            CREATE TABLE profile (
+                prof_cd_id UUID PRIMARY KEY,
+                prof_tx_name VARCHAR(150) NOT NULL,
+                prof_bt_perfil_image BYTEA,
+                prof_tx_bio TEXT,
+                prof_dt_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                prof_dt_updated_at TIMESTAMP WITH TIME ZONE,
+                usac_tx_username VARCHAR(255) NOT NULL UNIQUE,
+                usac_cd_id UUID NOT NULL UNIQUE
+            );
+
+            CREATE INDEX idx_profile_username
+                ON profile(usac_tx_username);
+
+            CREATE INDEX idx_profile_userid
+                ON profile(usac_cd_id);
+
+            -- =========================================
+            -- ATUALIZAÇÃO: post
+            -- =========================================
+            DROP INDEX IF EXISTS idx_post_author;
+
+            ALTER TABLE post
+                DROP COLUMN IF EXISTS usac_tx_username;
+
+            ALTER TABLE post
+                ADD COLUMN prof_cd_id UUID NOT NULL REFERENCES profile(prof_cd_id);
+
+            CREATE INDEX idx_post_profile
+                ON post(prof_cd_id);
+
+            -- =========================================
+            -- ATUALIZAÇÃO: comment
+            -- =========================================
+            DROP INDEX IF EXISTS idx_comment_author;
+
+            ALTER TABLE comment
+                DROP COLUMN IF EXISTS usac_tx_username;
+
+            ALTER TABLE comment
+                ADD COLUMN prof_cd_id UUID NOT NULL REFERENCES profile(prof_cd_id);
+
+            CREATE INDEX idx_comment_profile
+                ON comment(prof_cd_id);
+
+            -- =========================================
+            -- ATUALIZAÇÃO: user_like
+            -- =========================================
+            DROP TABLE IF EXISTS user_like;
+
+            CREATE TABLE user_like (
+                post_cd_id UUID NOT NULL,
+                prof_cd_id UUID NOT NULL,
+                usli_dt_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+                CONSTRAINT pk_user_like
+                    PRIMARY KEY (post_cd_id, prof_cd_id),
+
+                CONSTRAINT fk_user_like_post
+                    FOREIGN KEY (post_cd_id)
+                    REFERENCES post(post_cd_id),
+
+                CONSTRAINT fk_user_like_profile
+                    FOREIGN KEY (prof_cd_id)
+                    REFERENCES profile(prof_cd_id)
+            );
+
+            CREATE INDEX idx_user_like_post
+                ON user_like(post_cd_id);
+
+            CREATE INDEX idx_user_like_profile
+                ON user_like(prof_cd_id);
+
+            ]]>
+        </sql>
+
+        <rollback>
+            <![CDATA[
+
+            DROP TABLE IF EXISTS user_like;
+
+            ALTER TABLE comment
+                DROP COLUMN IF EXISTS prof_cd_id;
+            ALTER TABLE comment
+                ADD COLUMN usac_tx_username VARCHAR(255) NOT NULL;
+
+            ALTER TABLE post
+                DROP COLUMN IF EXISTS prof_cd_id;
+            ALTER TABLE post
+                ADD COLUMN usac_tx_username TEXT NOT NULL;
+
+            DROP TABLE IF EXISTS profile;
+
+            ]]>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

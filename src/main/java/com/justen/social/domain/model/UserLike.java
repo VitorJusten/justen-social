@@ -32,6 +32,11 @@ public class UserLike {
     @JoinColumn(name = "post_cd_id")
     private Post post;
 
+    @MapsId("profileId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prof_cd_id")
+    private Profile profile;
+
     @Column(name = "usli_dt_created_at", nullable = false)
     private OffsetDateTime createdAt;
 

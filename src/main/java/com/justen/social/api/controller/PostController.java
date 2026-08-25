@@ -52,6 +52,12 @@ public class PostController {
 		
 		return postService.getAllByUser(pageable, authorName);
 	}
+
+	@GetMapping("/by-profile/{profileId}")
+	public Page<PostSummaryDto> getAllByProfile(Pageable pageable, @PathVariable UUID profileId) {
+		
+		return postService.getAllByProfile(pageable, profileId);
+	}
 	
 	@GetMapping("/self")
 	public Page<PostSummaryDto> getMyPosts(Pageable pageable) {

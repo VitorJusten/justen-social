@@ -20,13 +20,15 @@ import lombok.NoArgsConstructor;
 public class UserLikeDto {
 
     private UUID postId;
-    private String username;
+    private UUID profileId;
+    private ProfileSummaryDto profile;
     private OffsetDateTime createdAt;
 
     public UserLikeDto(UserLike userLike) {
 
-        this.postId = userLike.getId().getPostId();
-        this.username = userLike.getId().getUsername();
+        this.postId = userLike.getId() != null ? userLike.getId().getPostId() : null;
+        this.profileId = userLike.getId() != null ? userLike.getId().getProfileId() : null;
+        this.profile = userLike.getProfile() != null ? new ProfileSummaryDto(userLike.getProfile()) : null;
         this.createdAt = userLike.getCreatedAt();
     }
 

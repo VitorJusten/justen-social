@@ -7,10 +7,10 @@ import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import com.justen.social.core.utils.SecurityUtils;
 import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Comment;
 import com.justen.social.domain.model.Post;
+import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.repository.CommentRepository;
 import com.justen.social.domain.repository.PostRepository;
 
@@ -29,7 +29,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final SecurityUtils securityUtils;
+    private final ProfileService profileService;
 
     public Comment create(Comment comment) {
 
@@ -46,7 +46,8 @@ public class CommentService {
 
         }
 
-        comment.setAuthorName(securityUtils.getLoggedUsername());
+        Profile profile = profileService.getMyProfile();
+        comment.setProfile(profile);
         comment.setCreatedAt(OffsetDateTime.now());
 
         postRepository.incrementComments(post.getId());
@@ -74,7 +75,7 @@ public class CommentService {
 
         BeanUtils.copyProperties(input, comment,
                 "id",
-                "authorName",
+                "profile",
                 "createdAt",
                 "post",
                 "commentFather");

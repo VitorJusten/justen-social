@@ -30,6 +30,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	@Query("""
 			SELECT DISTINCT p
 				FROM Post p
+				JOIN FETCH p.profile prof
 				LEFT JOIN FETCH p.medias m
 				LEFT JOIN FETCH m.mediaType
 				WHERE p.published IS TRUE
@@ -40,19 +41,38 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	/**
 	 * 
 	 * @param pageable
-	 * @param username
+	 * @param authorName
 	 * @return
 	 */
 	@Query("""
 			SELECT DISTINCT p
 				FROM Post p
+				JOIN FETCH p.profile prof
 				LEFT JOIN FETCH p.medias m
 				LEFT JOIN FETCH m.mediaType
 				WHERE p.published IS TRUE
-				AND p.authorName = :paramAuthor
+				AND prof.userName = :paramAuthor
 				ORDER BY p.fixed DESC, p.createdAt DESC
 			""")
 	Page<PostSummaryDto> findAllPostsByUser(Pageable pageable, @Param(value = "paramAuthor") String authorName);
+
+	/**
+	 * 
+	 * @param pageable
+	 * @param profileId
+	 * @return
+	 */
+	@Query("""
+			SELECT DISTINCT p
+				FROM Post p
+				JOIN FETCH p.profile prof
+				LEFT JOIN FETCH p.medias m
+				LEFT JOIN FETCH m.mediaType
+				WHERE p.published IS TRUE
+				AND prof.id = :paramProfileId
+				ORDER BY p.fixed DESC, p.createdAt DESC
+			""")
+	Page<PostSummaryDto> findAllPostsByProfile(Pageable pageable, @Param(value = "paramProfileId") UUID profileId);
 	
 	/**
 	 * 

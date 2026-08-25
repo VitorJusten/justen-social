@@ -13,6 +13,7 @@ import com.justen.social.core.utils.SecurityUtils;
 import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Media;
 import com.justen.social.domain.model.Post;
+import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.repository.PostRepository;
 
 import lombok.AllArgsConstructor;
@@ -29,10 +30,11 @@ import lombok.AllArgsConstructor;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final SecurityUtils securityUtils;
+    private final ProfileService profileService;
 
     public Post create(Post post) {
-    	post.setAuthorName(securityUtils.getLoggedUsername());
+        Profile profile = profileService.getMyProfile();
+        post.setProfile(profile);
         post.setCreatedAt(OffsetDateTime.now());
         
         return postRepository.save(post);
@@ -52,15 +54,20 @@ public class PostService {
     	return postRepository.findAllPostsByUser(pageable, authorName);
     }
     
+    public Page<PostSummaryDto> getAllByProfile(Pageable pageable, UUID profileId) {
+    	return postRepository.findAllPostsByProfile(pageable, profileId);
+    }
+    
 	public Page<PostSummaryDto> getMyPosts(Pageable pageable) {
-		return postRepository.findAllPostsByUser(pageable, securityUtils.getLoggedUsername());
+		Profile myProfile = profileService.getMyProfile();
+		return postRepository.findAllPostsByProfile(pageable, myProfile.getId());
 	}
     
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);
         
-        BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "authorName");
+        BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "profile");
         
         post.getMedias().clear();
 

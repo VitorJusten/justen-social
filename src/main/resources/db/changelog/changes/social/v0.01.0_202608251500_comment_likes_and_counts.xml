@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v0.01.0_comment_likes_and_counts" author="Vitor Justen">
+
+        <comment>Comment likes table and comment likes count column</comment>
+
+        <sql>
+            <![CDATA[
+
+            -- =========================================
+            -- COLUNA: likesCount na tabela comment
+            -- =========================================
+            ALTER TABLE comment
+                ADD COLUMN comm_nm_likes_count BIGINT NOT NULL DEFAULT 0;
+
+            -- =========================================
+            -- TABELA: comment_like
+            -- =========================================
+            CREATE TABLE comment_like (
+                comm_cd_id UUID NOT NULL,
+                prof_cd_id UUID NOT NULL,
+                coli_dt_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+                CONSTRAINT pk_comment_like
+                    PRIMARY KEY (comm_cd_id, prof_cd_id),
+
+                CONSTRAINT fk_comment_like_comment
+                    FOREIGN KEY (comm_cd_id)
+                    REFERENCES comment(comm_cd_id),
+
+                CONSTRAINT fk_comment_like_profile
+                    FOREIGN KEY (prof_cd_id)
+                    REFERENCES profile(prof_cd_id)
+            );
+
+            CREATE INDEX idx_comment_like_comment
+                ON comment_like(comm_cd_id);
+
+            CREATE INDEX idx_comment_like_profile
+                ON comment_like(prof_cd_id);
+
+            ]]>
+        </sql>
+
+        <rollback>
+            <![CDATA[
+
+            DROP TABLE IF EXISTS comment_like;
+
+            ALTER TABLE comment
+                DROP COLUMN IF EXISTS comm_nm_likes_count;
+
+            ]]>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

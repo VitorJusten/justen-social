@@ -28,6 +28,7 @@ public class CommentDto {
     private OffsetDateTime updatedAt;
     private UUID commentFatherId;
     private UUID postId;
+    private Long likesCount;
 
     private List<CommentDto> replies;
 
@@ -38,6 +39,7 @@ public class CommentDto {
         this.comment = comment.getComment();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
+        this.likesCount = comment.getLikesCount() != null ? comment.getLikesCount() : 0L;
 
         if (comment.getCommentFather() != null) {
             this.commentFatherId = comment.getCommentFather().getId();

@@ -1,6 +1,7 @@
 package com.justen.social.domain.service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -8,8 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.justen.infrastructure.enums.RoleEnum;
+import com.justen.infrastructure.utils.SecurityUtils;
 import com.justen.social.core.dto.PostSummaryDto;
-import com.justen.social.core.utils.SecurityUtils;
+import com.justen.social.domain.exception.BusinessException;
 import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Media;
 import com.justen.social.domain.model.Post;
@@ -31,6 +34,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final ProfileService profileService;
+    private final SecurityUtils securityUtils;
 
     public Post create(Post post) {
         Profile profile = profileService.getMyProfile();
@@ -66,6 +70,7 @@ public class PostService {
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);
+        validatePostOwnerOrAdmin(post);
         
         BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "profile");
         
@@ -82,12 +87,15 @@ public class PostService {
     }
 
     public void delete(UUID id) {
-        postRepository.deleteById(id);
+        Post post = getById(id);
+        validatePostOwnerOrAdmin(post);
+        postRepository.delete(post);
     }
 
     public Post changeVisibility(UUID id, Boolean isPublic) {
 
         Post post = getById(id);
+        validatePostOwnerOrAdmin(post);
 
         post.setPublished(isPublic);
         post.setUpdatedAt(OffsetDateTime.now());
@@ -98,11 +106,21 @@ public class PostService {
     public Post pin(UUID id, Boolean isPinned) {
 
         Post post = getById(id);
+        validatePostOwnerOrAdmin(post);
 
         post.setFixed(isPinned);
         post.setUpdatedAt(OffsetDateTime.now());
 
         return postRepository.save(post);
+    }
+
+    private void validatePostOwnerOrAdmin(Post post) {
+        Profile myProfile = profileService.getMyProfile();
+        boolean isOwner = post.getProfile() != null && post.getProfile().getId().equals(myProfile.getId());
+        Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+        if (!isOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
+            throw new BusinessException("unauthorizedAction");
+        }
     }
 
 }

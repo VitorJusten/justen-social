@@ -57,8 +57,14 @@ public class Comment {
     @OneToMany(mappedBy = "commentFather", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies;
 
+    @Column(name = "comm_nm_likes_count", nullable = false)
+    private Long likesCount = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_cd_id", nullable = false)
     private Post post;
+
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> likes;
 
 }

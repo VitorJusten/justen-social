@@ -7,6 +7,9 @@ import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import com.justen.infrastructure.enums.RoleEnum;
+import com.justen.infrastructure.utils.SecurityUtils;
+import com.justen.social.domain.exception.BusinessException;
 import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Comment;
 import com.justen.social.domain.model.Post;
@@ -30,6 +33,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final ProfileService profileService;
+    private final SecurityUtils securityUtils;
 
     public Comment create(Comment comment) {
 
@@ -72,6 +76,7 @@ public class CommentService {
     public Comment update(UUID id, Comment input) {
 
         Comment comment = getById(id);
+        validateCommentModification(comment);
 
         BeanUtils.copyProperties(input, comment,
                 "id",
@@ -89,11 +94,22 @@ public class CommentService {
     public void delete(UUID id) {
 
         Comment comment = getById(id);
+        validateCommentModification(comment);
 
         postRepository.decrementComments(comment.getPost().getId());
 
         commentRepository.delete(comment);
 
+    }
+
+    private void validateCommentModification(Comment comment) {
+        Profile myProfile = profileService.getMyProfile();
+        boolean isCommentOwner = comment.getProfile() != null && comment.getProfile().getId().equals(myProfile.getId());
+        boolean isPostOwner = comment.getPost() != null && comment.getPost().getProfile() != null && comment.getPost().getProfile().getId().equals(myProfile.getId());
+        Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+        if (!isCommentOwner && !isPostOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
+            throw new BusinessException("unauthorizedAction");
+        }
     }
 
 }

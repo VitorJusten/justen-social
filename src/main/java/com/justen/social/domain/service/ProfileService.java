@@ -1,6 +1,7 @@
 package com.justen.social.domain.service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
@@ -8,7 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.justen.social.core.utils.SecurityUtils;
+import com.justen.infrastructure.enums.RoleEnum;
+import com.justen.infrastructure.utils.SecurityUtils;
 import com.justen.social.domain.exception.BusinessException;
 import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Profile;
@@ -77,6 +79,7 @@ public class ProfileService {
 
 	public Profile update(UUID id, Profile input) {
 		Profile profile = getById(id);
+		validateProfileOwnerOrAdmin(profile);
 
 		BeanUtils.copyProperties(input, profile, "id", "createdAt", "userId", "userName");
 		profile.setUpdatedAt(OffsetDateTime.now());
@@ -85,7 +88,18 @@ public class ProfileService {
 	}
 
 	public void delete(UUID id) {
-		profileRepository.deleteById(id);
+		Profile profile = getById(id);
+		validateProfileOwnerOrAdmin(profile);
+		profileRepository.delete(profile);
+	}
+
+	private void validateProfileOwnerOrAdmin(Profile profile) {
+		UUID loggedUserId = securityUtils.getLoggedUserId();
+		boolean isOwner = profile.getUserId() != null && profile.getUserId().equals(loggedUserId);
+		Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+		if (!isOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
+			throw new BusinessException("unauthorizedAction");
+		}
 	}
 
 }

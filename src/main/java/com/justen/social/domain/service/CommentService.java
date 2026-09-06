@@ -105,7 +105,8 @@ public class CommentService {
     private void validateCommentModification(Comment comment) {
         Profile myProfile = profileService.getMyProfile();
         boolean isCommentOwner = comment.getProfile() != null && comment.getProfile().getId().equals(myProfile.getId());
-        boolean isPostOwner = comment.getPost() != null && comment.getPost().getProfile() != null && comment.getPost().getProfile().getId().equals(myProfile.getId());
+        boolean isPostOwner = comment.getPost() != null && comment.getPost().getProfile() != null
+                && comment.getPost().getProfile().getId().equals(myProfile.getId());
         Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
         if (!isCommentOwner && !isPostOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
             throw new BusinessException("unauthorizedAction");

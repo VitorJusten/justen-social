@@ -40,7 +40,7 @@ public class PostService {
         Profile profile = profileService.getMyProfile();
         post.setProfile(profile);
         post.setCreatedAt(OffsetDateTime.now());
-        
+
         return postRepository.save(post);
     }
 
@@ -53,27 +53,27 @@ public class PostService {
     public Page<PostSummaryDto> getAll(Pageable pageable, String filters) {
         return postRepository.findAllPosts(pageable, filters);
     }
-    
+
     public Page<PostSummaryDto> getAllByUser(Pageable pageable, String authorName) {
-    	return postRepository.findAllPostsByUser(pageable, authorName);
+        return postRepository.findAllPostsByUser(pageable, authorName);
     }
-    
+
     public Page<PostSummaryDto> getAllByProfile(Pageable pageable, UUID profileId) {
-    	return postRepository.findAllPostsByProfile(pageable, profileId);
+        return postRepository.findAllPostsByProfile(pageable, profileId);
     }
-    
-	public Page<PostSummaryDto> getMyPosts(Pageable pageable) {
-		Profile myProfile = profileService.getMyProfile();
-		return postRepository.findAllPostsByProfile(pageable, myProfile.getId());
-	}
-    
+
+    public Page<PostSummaryDto> getMyPosts(Pageable pageable) {
+        Profile myProfile = profileService.getMyProfile();
+        return postRepository.findAllPostsByProfile(pageable, myProfile.getId());
+    }
+
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);
         validatePostOwnerOrAdmin(post);
-        
+
         BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "profile");
-        
+
         post.getMedias().clear();
 
         for (Media media : postInput.getMedias()) {

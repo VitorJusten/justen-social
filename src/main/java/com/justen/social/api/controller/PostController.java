@@ -1,5 +1,6 @@
 package com.justen.social.api.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -66,9 +67,11 @@ public class PostController {
 	}
 	
 	@GetMapping("/featured")
-	public Page<PostSummaryDto> getFeaturedAdminOrDevPosts(Pageable pageable) {
-		
-		return postService.getFeaturedAdminOrDevPosts(pageable);
+	public Page<PostSummaryDto> findAllPostsByUserIds(
+	        @RequestParam() List<UUID> userIds,
+	        Pageable pageable) {
+
+	    return postService.findAllPostsByUserIds(userIds, pageable);
 	}
 
 

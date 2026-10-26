@@ -83,8 +83,8 @@ public class PostService {
         return postRepository.findAllPosts(pageable, filters);
     }
 
-    public Page<PostSummaryDto> getFeaturedAdminOrDevPosts(Pageable pageable) {
-        return postRepository.findAllFeaturedAdminOrDevPosts(pageable);
+    public Page<PostSummaryDto> findAllPostsByUserIds(List<UUID> userIds, Pageable pageable) {
+        return postRepository.findAllPostsByUserIds(userIds, pageable);
     }
 
     public Page<PostSummaryDto> getAllByUser(Pageable pageable, String authorName) {

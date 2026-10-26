@@ -1,5 +1,6 @@
 package com.justen.social.domain.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -39,8 +40,8 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 				AND (p.blocked IS FALSE OR p.blocked IS NULL)
 				ORDER BY p.fixed DESC, p.createdAt DESC
 			""")
-    Page<PostSummaryDto> findAllPosts(Pageable pageable, String filters);
-	
+	Page<PostSummaryDto> findAllPosts(Pageable pageable, String filters);
+
 	/**
 	 * 
 	 * @param pageable
@@ -80,28 +81,25 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	Page<PostSummaryDto> findAllPostsByProfile(Pageable pageable, @Param(value = "paramProfileId") UUID profileId);
 
 	/**
-	 * Posts feitos por usuários com role ADM ou DEV
-	 * @param pageable
-	 * @return
+	 * Posts publicados por usuários presentes na lista de IDs informada.
+	 *
+	 * @param userIds  lista de UUIDs dos usuários
+	 * @param pageable paginação dos resultados
+	 * @return posts dos usuários informados
 	 */
 	@Query("""
 			SELECT DISTINCT p
-				FROM Post p
-				JOIN FETCH p.profile prof
-				LEFT JOIN FETCH p.medias m
-				LEFT JOIN FETCH m.mediaType
-				WHERE p.published IS TRUE
-				AND (p.blocked IS FALSE OR p.blocked IS NULL)
-				AND EXISTS (
-					SELECT 1 FROM User u
-					JOIN u.roles r
-					WHERE u.id = prof.userId
-					AND r.name IN ('ADM', 'DEV')
-				)
-				ORDER BY p.fixed DESC, p.createdAt DESC
+			FROM Post p
+			JOIN FETCH p.profile prof
+			LEFT JOIN FETCH p.medias m
+			LEFT JOIN FETCH m.mediaType
+			WHERE p.published IS TRUE
+			  AND (p.blocked IS FALSE OR p.blocked IS NULL)
+			  AND prof.userId IN :userIds
+			ORDER BY p.fixed DESC, p.createdAt DESC
 			""")
-	Page<PostSummaryDto> findAllFeaturedAdminOrDevPosts(Pageable pageable);
-	
+	Page<PostSummaryDto> findAllPostsByUserIds(@Param("userIds") List<UUID> userIds, Pageable pageable);
+
 	/**
 	 * 
 	 * @param postId
@@ -109,10 +107,10 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	@Modifying
 	@Transactional
 	@Query("""
-	    update Post p
-	       set p.likesCount = p.likesCount + 1
-	     where p.id = :postId
-	""")
+			    update Post p
+			       set p.likesCount = p.likesCount + 1
+			     where p.id = :postId
+			""")
 	void incrementLikes(UUID postId);
 
 	/**
@@ -122,10 +120,10 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	@Modifying
 	@Transactional
 	@Query("""
-	    update Post p
-	       set p.likesCount = p.likesCount - 1
-	     where p.id = :postId
-	""")
+			    update Post p
+			       set p.likesCount = p.likesCount - 1
+			     where p.id = :postId
+			""")
 	void decrementLikes(UUID postId);
 
 	/**
@@ -135,12 +133,12 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	@Modifying
 	@Transactional
 	@Query("""
-	    update Post p
-	       set p.commentsCount = p.commentsCount + 1
-	     where p.id = :postId
-	""")
+			    update Post p
+			       set p.commentsCount = p.commentsCount + 1
+			     where p.id = :postId
+			""")
 	void incrementComments(UUID postId);
-	
+
 	/**
 	 * 
 	 * @param postId
@@ -148,10 +146,10 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	@Modifying
 	@Transactional
 	@Query("""
-	    update Post p
-	       set p.commentsCount = p.commentsCount - 1
-	     where p.id = :postId
-	""")
+			    update Post p
+			       set p.commentsCount = p.commentsCount - 1
+			     where p.id = :postId
+			""")
 	void decrementComments(UUID postId);
 
 	/**
@@ -161,10 +159,10 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	@Modifying
 	@Transactional
 	@Query("""
-	    update Post p
-	       set p.views = p.views + 1
-	     where p.id = :postId
-	""")
+			    update Post p
+			       set p.views = p.views + 1
+			     where p.id = :postId
+			""")
 	void incrementViews(UUID postId);
-	
+
 }

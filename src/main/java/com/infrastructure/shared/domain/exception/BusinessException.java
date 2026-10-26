@@ -1,4 +1,4 @@
-package com.justen.social.domain.exception;
+package com.infrastructure.shared.domain.exception;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import lombok.Data;
 /**
  * 
  * @Author GitHub - VitorJusten
- * @ProjectName justen-social
+ * @ProjectName justen-auth
  * @Year 2026
  *
  */
@@ -18,7 +18,7 @@ public class BusinessException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	private List<Field> fields = new ArrayList<>();
-	
+
 	public BusinessException(String message, Throwable cause) {
 		super(message, cause);
 	}
@@ -37,11 +37,11 @@ public class BusinessException extends RuntimeException {
 		super("Invalid arguments.");
 		this.fields = fields;
 	}
-	
+
 	public List<Field> getFields() {
 		return this.fields;
 	}
-	
+
 	public boolean hasFields() {
 		return !this.fields.isEmpty();
 	}
@@ -49,8 +49,8 @@ public class BusinessException extends RuntimeException {
 	@Data
 	@AllArgsConstructor
 	public static class Field {
-        private String name;
-        private String message;
-    }
-	
+		private String name;
+		private String message;
+	}
+
 }

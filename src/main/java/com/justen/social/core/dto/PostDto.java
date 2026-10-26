@@ -27,9 +27,13 @@ public class PostDto {
 	private String description; //artigo!
 	private Boolean published = false;
 	private Boolean fixed = false;
+	private Boolean blocked = false;
 	private OffsetDateTime createdAt;
 	private OffsetDateTime updatedAt;
 	private byte[] thumbImage;
+	private Long views = 0L;
+	private Long likesCount = 0L;
+	private Long commentsCount = 0L;
 	private List<MediaDto> medias;
     
     public PostDto(Post post) {
@@ -40,9 +44,13 @@ public class PostDto {
         this.description = post.getDescription();
         this.published = post.getPublished();
         this.fixed = post.getFixed();
+        this.blocked = post.getBlocked();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
         this.thumbImage = post.getThumbImage();
+        this.views = post.getViews() != null ? post.getViews() : 0L;
+        this.likesCount = post.getLikesCount() != null ? post.getLikesCount() : 0L;
+        this.commentsCount = post.getCommentsCount() != null ? post.getCommentsCount() : 0L;
         this.medias = post.getMedias()
                 .stream()
                 .map(MediaDto::new)

@@ -9,10 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.justen.infrastructure.enums.RoleEnum;
-import com.justen.infrastructure.utils.SecurityUtils;
-import com.justen.social.domain.exception.BusinessException;
-import com.justen.social.domain.exception.EntityNotFoundException;
+import com.infrastructure.shared.core.enums.RoleEnum;
+import com.infrastructure.shared.core.utils.SecurityUtils;
+import com.infrastructure.shared.domain.exception.BusinessException;
+import com.infrastructure.shared.domain.exception.EntityNotFoundException;
+import com.justen.social.core.enums.ProfileStatusEnum;
 import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.repository.ProfileRepository;
 
@@ -41,6 +42,7 @@ public class ProfileService {
 		}
 
 		profile.setUserId(userId);
+		// Somente leitura: o valor vem de user_account, aqui só preenche o retorno da criação
 		profile.setUserName(userName);
 		profile.setCreatedAt(OffsetDateTime.now());
 
@@ -87,6 +89,23 @@ public class ProfileService {
 		return profileRepository.save(profile);
 	}
 
+	public Profile changeStatus(UUID id, ProfileStatusEnum status) {
+		Profile profile = getById(id);
+		validateProfileOwnerOrAdmin(profile);
+		profile.setStatus(status);
+		profile.setUpdatedAt(OffsetDateTime.now());
+		return profileRepository.save(profile);
+	}
+
+	public Profile blockProfile(UUID id, Boolean isBlocked) {
+		// Apenas ADM ou DEV podem bloquear perfis
+		securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+		Profile profile = getById(id);
+		profile.setBlocked(isBlocked);
+		profile.setUpdatedAt(OffsetDateTime.now());
+		return profileRepository.save(profile);
+	}
+
 	public void delete(UUID id) {
 		Profile profile = getById(id);
 		validateProfileOwnerOrAdmin(profile);
@@ -96,7 +115,7 @@ public class ProfileService {
 	private void validateProfileOwnerOrAdmin(Profile profile) {
 		UUID loggedUserId = securityUtils.getLoggedUserId();
 		boolean isOwner = profile.getUserId() != null && profile.getUserId().equals(loggedUserId);
-		Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+		Boolean isAdmOrDev = securityUtils.hasAnyRole(List.of(RoleEnum.ADM, RoleEnum.DEV));
 		if (!isOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
 			throw new BusinessException("unauthorizedAction");
 		}

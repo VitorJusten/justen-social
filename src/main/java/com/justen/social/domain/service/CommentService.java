@@ -5,18 +5,21 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.justen.infrastructure.enums.RoleEnum;
-import com.justen.infrastructure.utils.SecurityUtils;
-import com.justen.social.domain.exception.BusinessException;
-import com.justen.social.domain.exception.EntityNotFoundException;
+import com.infrastructure.shared.core.enums.RoleEnum;
+import com.infrastructure.shared.core.utils.SecurityUtils;
+import com.infrastructure.shared.domain.exception.BusinessException;
+import com.infrastructure.shared.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Comment;
 import com.justen.social.domain.model.Post;
 import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.repository.CommentRepository;
 import com.justen.social.domain.repository.PostRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 /**
@@ -35,6 +38,7 @@ public class CommentService {
     private final ProfileService profileService;
     private final SecurityUtils securityUtils;
 
+    @Transactional
     public Comment create(Comment comment) {
 
         Post post = postRepository.findById(comment.getPost().getId())
@@ -69,10 +73,43 @@ public class CommentService {
 
     public List<Comment> getByPost(UUID postId) {
 
-        return commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId);
+        return commentRepository.findAllByPostIdOrderedWithFixed(postId);
 
     }
 
+    public Page<Comment> getRootCommentsByPost(UUID postId, Pageable pageable) {
+
+        return commentRepository.findRootCommentsByPostIdOrderedWithFixed(postId, pageable);
+
+    }
+
+    @Transactional
+    public Comment pin(UUID commentId, Boolean isPinned) {
+
+        Comment comment = getById(commentId);
+        validatePostOwnerOrAdmin(comment.getPost());
+
+        if (Boolean.TRUE.equals(isPinned)) {
+            comment.setFixedDate(OffsetDateTime.now());
+        } else {
+            comment.setFixedDate(null);
+        }
+
+        comment.setUpdatedAt(OffsetDateTime.now());
+        return commentRepository.save(comment);
+
+    }
+
+    private void validatePostOwnerOrAdmin(Post post) {
+        Profile myProfile = profileService.getMyProfile();
+        boolean isOwner = post != null && post.getProfile() != null && post.getProfile().getId().equals(myProfile.getId());
+        Boolean isAdmOrDev = securityUtils.hasAnyRole(List.of(RoleEnum.ADM, RoleEnum.DEV));
+        if (!isOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
+            throw new BusinessException("unauthorizedAction");
+        }
+    }
+
+    @Transactional
     public Comment update(UUID id, Comment input) {
 
         Comment comment = getById(id);
@@ -91,6 +128,7 @@ public class CommentService {
 
     }
 
+    @Transactional
     public void delete(UUID id) {
 
         Comment comment = getById(id);
@@ -107,7 +145,7 @@ public class CommentService {
         boolean isCommentOwner = comment.getProfile() != null && comment.getProfile().getId().equals(myProfile.getId());
         boolean isPostOwner = comment.getPost() != null && comment.getPost().getProfile() != null
                 && comment.getPost().getProfile().getId().equals(myProfile.getId());
-        Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+        Boolean isAdmOrDev = securityUtils.hasAnyRole(List.of(RoleEnum.ADM, RoleEnum.DEV));
         if (!isCommentOwner && !isPostOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
             throw new BusinessException("unauthorizedAction");
         }

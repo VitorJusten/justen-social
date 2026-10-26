@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v0.01.0_post_views_and_comment_fixed_date" author="Vitor Justen">
+
+        <comment>Add post views column and comment fixed date column</comment>
+
+        <sql>
+            <![CDATA[
+
+            -- =========================================
+            -- COLUNA: views na tabela post
+            -- =========================================
+            ALTER TABLE post
+                ADD COLUMN IF NOT EXISTS post_nm_views BIGINT NOT NULL DEFAULT 0;
+
+            -- =========================================
+            -- COLUNA: fixedDate na tabela comment
+            -- =========================================
+            ALTER TABLE comment
+                ADD COLUMN IF NOT EXISTS comm_dt_fixed_date TIMESTAMP WITH TIME ZONE;
+
+            ]]>
+        </sql>
+
+        <rollback>
+            <![CDATA[
+
+            ALTER TABLE post
+                DROP COLUMN IF EXISTS post_nm_views;
+
+            ALTER TABLE comment
+                DROP COLUMN IF EXISTS comm_dt_fixed_date;
+
+            ]]>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

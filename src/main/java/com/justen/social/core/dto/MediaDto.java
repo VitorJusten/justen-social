@@ -26,12 +26,18 @@ public class MediaDto {
 	
 	private MediaTypeDto mediaTypeDto;
 
+	private Boolean canDownload;
+
+	private String fileName;
+
 	public MediaDto(Media media) {
 		super();
 		this.id = media.getId();
 		this.content = media.getContent();
 		this.postId = media.getPost().getId();
 		this.mediaTypeDto = new MediaTypeDto(media.getMediaType());
+		this.canDownload = media.getCanDownload();
+		this.fileName = media.getFileName();
 	}
 	
 }

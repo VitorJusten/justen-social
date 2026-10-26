@@ -60,6 +60,9 @@ public class Comment {
     @Column(name = "comm_nm_likes_count", nullable = false)
     private Long likesCount = 0L;
 
+    @Column(name = "comm_dt_fixed_date")
+    private OffsetDateTime fixedDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_cd_id", nullable = false)
     private Post post;

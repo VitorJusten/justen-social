@@ -1,4 +1,4 @@
-package com.justen.infrastructure.enums;
+package com.infrastructure.shared.core.enums;
 
 import java.util.UUID;
 

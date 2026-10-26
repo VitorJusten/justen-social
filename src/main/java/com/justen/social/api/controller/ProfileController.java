@@ -53,6 +53,11 @@ public class ProfileController {
 		return new ProfileDto(profileService.getByUserId(userId));
 	}
 
+	@GetMapping("/username/{username}")
+	public ProfileDto getByUserName(@PathVariable String username) {
+		return new ProfileDto(profileService.getByUserName(username));
+	}
+
 	@GetMapping
 	public Page<ProfileDto> getAll(Pageable pageable) {
 		return profileService.getAll(pageable).map(ProfileDto::new);
@@ -66,6 +71,18 @@ public class ProfileController {
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable UUID id) {
 		profileService.delete(id);
+	}
+
+	@org.springframework.web.bind.annotation.PatchMapping("/{id}/status")
+	public ProfileDto changeStatus(@PathVariable UUID id,
+			@org.springframework.web.bind.annotation.RequestParam com.justen.social.core.enums.ProfileStatusEnum status) {
+		return new ProfileDto(profileService.changeStatus(id, status));
+	}
+
+	@org.springframework.web.bind.annotation.PatchMapping("/{id}/block")
+	public ProfileDto block(@PathVariable UUID id,
+			@org.springframework.web.bind.annotation.RequestParam Boolean isBlocked) {
+		return new ProfileDto(profileService.blockProfile(id, isBlocked));
 	}
 
 }

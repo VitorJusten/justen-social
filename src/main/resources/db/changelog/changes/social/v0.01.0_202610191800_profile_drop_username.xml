@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="v0.01.0_202610191800" author="Vitor Justen">
+        <comment>Remove usac_tx_username from profile (username now comes from user_account)</comment>
+
+        <sql>
+            <![CDATA[
+                DROP INDEX IF EXISTS idx_profile_username;
+
+                ALTER TABLE profile
+                    DROP COLUMN IF EXISTS usac_tx_username;
+            ]]>
+        </sql>
+
+        <rollback>
+            <sql>
+                <![CDATA[
+                    ALTER TABLE profile
+                        ADD COLUMN IF NOT EXISTS usac_tx_username VARCHAR(255);
+
+                    UPDATE profile p
+                       SET usac_tx_username = ua.usac_tx_username
+                      FROM user_account ua
+                     WHERE ua.usac_cd_id = p.usac_cd_id;
+
+                    ALTER TABLE profile
+                        ALTER COLUMN usac_tx_username SET NOT NULL;
+
+                    CREATE INDEX IF NOT EXISTS idx_profile_username
+                        ON profile(usac_tx_username);
+                ]]>
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

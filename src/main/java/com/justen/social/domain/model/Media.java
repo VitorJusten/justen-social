@@ -46,4 +46,10 @@ public class Media {
 	@JoinColumn(name = "post_cd_id")
 	private Post post;
 	
+	@Column(name = "medi_nm_can_download", nullable = false)
+	private Boolean canDownload = true;
+
+	@Column(name = "medi_tx_file_name", length = 255)
+	private String fileName;
+
 }

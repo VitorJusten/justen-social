@@ -9,16 +9,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.justen.infrastructure.enums.RoleEnum;
-import com.justen.infrastructure.utils.SecurityUtils;
+import com.infrastructure.shared.core.enums.RoleEnum;
+import com.infrastructure.shared.core.utils.FileValidationUtils;
+import com.infrastructure.shared.core.utils.SecurityUtils;
+import com.infrastructure.shared.domain.exception.BusinessException;
+import com.infrastructure.shared.domain.exception.EntityNotFoundException;
 import com.justen.social.core.dto.PostSummaryDto;
-import com.justen.social.domain.exception.BusinessException;
-import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Media;
 import com.justen.social.domain.model.Post;
 import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.repository.PostRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 /**
@@ -36,22 +38,53 @@ public class PostService {
     private final ProfileService profileService;
     private final SecurityUtils securityUtils;
 
+    @Transactional
     public Post create(Post post) {
         Profile profile = profileService.getMyProfile();
         post.setProfile(profile);
         post.setCreatedAt(OffsetDateTime.now());
+
+        // Validação de arquivo da Thumbnail
+        if (post.getThumbImage() != null && post.getThumbImage().length > 0) {
+            FileValidationUtils.validateIsImage(post.getThumbImage());
+        }
+
+        // Validação de arquivos anexados (bloqueio de executáveis)
+        if (post.getMedias() != null) {
+            for (Media media : post.getMedias()) {
+                if (media.getContent() != null && media.getContent().length > 0) {
+                    FileValidationUtils.validateNotExecutable(media.getContent());
+                }
+                if (media.getFileName() != null) {
+                    FileValidationUtils.validateNotExecutable(media.getFileName());
+                }
+            }
+        }
+
+        // Apenas ADM ou DEV podem criar posts já fixados
+        Boolean isAdmOrDev = securityUtils.hasAnyRole(List.of(RoleEnum.ADM, RoleEnum.DEV));
+        if (!Boolean.TRUE.equals(isAdmOrDev)) {
+            post.setFixed(false);
+        }
 
         return postRepository.save(post);
     }
 
     public Post getById(UUID id) {
 
-        return postRepository.findById(id)
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("postNotFound"));
+        postRepository.incrementViews(id);
+        post.setViews((post.getViews() != null ? post.getViews() : 0L) + 1L);
+        return post;
     }
 
     public Page<PostSummaryDto> getAll(Pageable pageable, String filters) {
         return postRepository.findAllPosts(pageable, filters);
+    }
+
+    public Page<PostSummaryDto> getFeaturedAdminOrDevPosts(Pageable pageable) {
+        return postRepository.findAllFeaturedAdminOrDevPosts(pageable);
     }
 
     public Page<PostSummaryDto> getAllByUser(Pageable pageable, String authorName) {
@@ -67,12 +100,13 @@ public class PostService {
         return postRepository.findAllPostsByProfile(pageable, myProfile.getId());
     }
 
+    @Transactional
     public Post update(UUID id, Post postInput) {
 
         Post post = getById(id);
         validatePostOwnerOrAdmin(post);
 
-        BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "profile");
+        BeanUtils.copyProperties(postInput, post, "id", "createdAt", "medias", "profile", "fixed", "blocked");
 
         post.getMedias().clear();
 
@@ -86,6 +120,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    @Transactional
     public void delete(UUID id) {
         Post post = getById(id);
         validatePostOwnerOrAdmin(post);
@@ -103,12 +138,26 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    @Transactional
     public Post pin(UUID id, Boolean isPinned) {
 
-        Post post = getById(id);
-        validatePostOwnerOrAdmin(post);
+        // Apenas ADM ou DEV podem fixar/desfixar qualquer post
+        securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
 
+        Post post = getById(id);
         post.setFixed(isPinned);
+        post.setUpdatedAt(OffsetDateTime.now());
+
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post blockPost(UUID id, Boolean isBlocked) {
+        // Apenas ADM ou DEV podem bloquear/desbloquear posts
+        securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+
+        Post post = getById(id);
+        post.setBlocked(isBlocked);
         post.setUpdatedAt(OffsetDateTime.now());
 
         return postRepository.save(post);
@@ -117,7 +166,7 @@ public class PostService {
     private void validatePostOwnerOrAdmin(Post post) {
         Profile myProfile = profileService.getMyProfile();
         boolean isOwner = post.getProfile() != null && post.getProfile().getId().equals(myProfile.getId());
-        Boolean isAdmOrDev = securityUtils.validateRoles(List.of(RoleEnum.ADM, RoleEnum.DEV));
+        Boolean isAdmOrDev = securityUtils.hasAnyRole(List.of(RoleEnum.ADM, RoleEnum.DEV));
         if (!isOwner && !Boolean.TRUE.equals(isAdmOrDev)) {
             throw new BusinessException("unauthorizedAction");
         }

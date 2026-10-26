@@ -1,14 +1,14 @@
-package com.justen.social.domain.exception;
+package com.infrastructure.shared.domain.exception;
 
 /**
  * 
  * @Author GitHub - VitorJusten
- * @ProjectName justen-social
+ * @ProjectName justen-auth
  * @Year 2026
  *
  */
 public class EntityNotFoundException extends RuntimeException {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public EntityNotFoundException(String message) {

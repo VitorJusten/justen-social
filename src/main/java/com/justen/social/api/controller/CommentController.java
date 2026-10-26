@@ -3,6 +3,8 @@ package com.justen.social.api.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +58,14 @@ public class CommentController {
 
     }
 
+    @GetMapping("/post/{postId}/root")
+    public Page<CommentDto> getRootCommentsByPost(@PathVariable UUID postId, Pageable pageable) {
+
+        return commentService.getRootCommentsByPost(postId, pageable)
+                .map(CommentDto::new);
+
+    }
+
     @PutMapping("/{id}")
     public CommentDto update(@PathVariable UUID id,
                              @RequestBody CommentInputDto input) {
@@ -68,6 +78,14 @@ public class CommentController {
     public void delete(@PathVariable UUID id) {
 
         commentService.delete(id);
+
+    }
+
+    @org.springframework.web.bind.annotation.PatchMapping("/{id}/pin")
+    public CommentDto pin(@PathVariable UUID id,
+                          @org.springframework.web.bind.annotation.RequestParam Boolean isPinned) {
+
+        return new CommentDto(commentService.pin(id, isPinned));
 
     }
 

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: justen-auth
+    name: justen-social
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/justen-social-db}

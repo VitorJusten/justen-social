@@ -27,9 +27,13 @@ public class PostSummaryDto {
     private String description;
     private Boolean published;
     private Boolean fixed;
+    private Boolean blocked;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 	private byte[] thumbImage;
+    private Long views = 0L;
+    private Long likesCount = 0L;
+    private Long commentsCount = 0L;
     private List<MediaSummaryDto> medias;
     
     public PostSummaryDto(Post post) {
@@ -40,9 +44,13 @@ public class PostSummaryDto {
         this.description = post.getDescription();
         this.published = post.getPublished();
         this.fixed = post.getFixed();
+        this.blocked = post.getBlocked();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
         this.thumbImage = post.getThumbImage();
+        this.views = post.getViews() != null ? post.getViews() : 0L;
+        this.likesCount = post.getLikesCount() != null ? post.getLikesCount() : 0L;
+        this.commentsCount = post.getCommentsCount() != null ? post.getCommentsCount() : 0L;
         this.medias = post.getMedias()
                 .stream()
                 .map(MediaSummaryDto::new)

@@ -1,4 +1,4 @@
-package com.justen.infrastructure.utils;
+package com.infrastructure.shared.core.utils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

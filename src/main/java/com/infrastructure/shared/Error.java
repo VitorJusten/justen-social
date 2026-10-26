@@ -1,4 +1,4 @@
-package com.justen.social.api.exception;
+package com.infrastructure.shared;
 
 import java.time.OffsetDateTime;
 import java.util.List;

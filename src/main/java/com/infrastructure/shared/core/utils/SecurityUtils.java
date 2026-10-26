@@ -1,4 +1,4 @@
-package com.justen.infrastructure.utils;
+package com.infrastructure.shared.core.utils;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +10,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.justen.infrastructure.enums.RoleEnum;
+import com.infrastructure.shared.core.enums.RoleEnum;
+import com.infrastructure.shared.domain.exception.BusinessException;
 
 import lombok.AllArgsConstructor;
 
@@ -49,7 +50,15 @@ public class SecurityUtils {
 				.toList();
 	}
 
-	public Boolean validateRoles(List<RoleEnum> roles) {
+	public void validateRoles(List<RoleEnum> roles) {
+		List<String> userRoles = getLoggedUserRoles();
+		boolean ok = roles.stream().map(RoleEnum::getName).anyMatch(userRoles::contains);
+		if (!ok) {
+			throw new BusinessException("You do not have permission to perform this action");
+		}
+	}
+	
+	public Boolean hasAnyRole(List<RoleEnum> roles) {
 		List<String> userRoles = getLoggedUserRoles();
 		return roles.stream().map(RoleEnum::getName).anyMatch(userRoles::contains);
 	}

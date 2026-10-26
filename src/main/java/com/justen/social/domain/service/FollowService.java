@@ -9,10 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.infrastructure.shared.domain.exception.BusinessException;
+import com.infrastructure.shared.domain.exception.EntityNotFoundException;
 import com.justen.social.core.enums.FollowStatusEnum;
 import com.justen.social.core.enums.ProfileStatusEnum;
-import com.justen.social.domain.exception.BusinessException;
-import com.justen.social.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Follow;
 import com.justen.social.domain.model.Profile;
 import com.justen.social.domain.repository.FollowRepository;

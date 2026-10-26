@@ -3,6 +3,8 @@ package com.justen.social.domain.model;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.Formula;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +46,9 @@ public class Profile {
 	@Column(name = "prof_tx_status", nullable = false)
 	private ProfileStatusEnum status = ProfileStatusEnum.PUBLIC;
 
+	@Column(name = "prof_nm_blocked", nullable = false)
+	private Boolean blocked = false;
+
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "prof_bt_perfil_image")
 	private byte[] perfilImage;
@@ -57,7 +62,7 @@ public class Profile {
 	@Column(name = "prof_dt_updated_at")
 	private OffsetDateTime updatedAt;
 
-	@Column(name = "usac_tx_username", nullable = false)
+	@Formula("(select ua.usac_tx_username from user_account ua where ua.usac_cd_id = usac_cd_id)")
 	private String userName;
 
 	@Column(name = "usac_cd_id", nullable = false)

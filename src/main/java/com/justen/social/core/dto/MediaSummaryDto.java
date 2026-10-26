@@ -25,11 +25,17 @@ public class MediaSummaryDto {
 	
 	private MediaTypeEnum mediaType;
 
+	private Boolean canDownload;
+
+	private String fileName;
+
 	public MediaSummaryDto(Media media) {
 		super();
 		this.id = media.getId();
 		this.postId = media.getPost().getId();
 		this.mediaType = MediaTypeEnum.fromId(media.getMediaType().getId());
+		this.canDownload = media.getCanDownload();
+		this.fileName = media.getFileName();
 	}
 	
 }

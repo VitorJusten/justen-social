@@ -65,6 +65,12 @@ public class PostController {
 		return postService.getMyPosts(pageable);
 	}
 	
+	@GetMapping("/featured")
+	public Page<PostSummaryDto> getFeaturedAdminOrDevPosts(Pageable pageable) {
+		
+		return postService.getFeaturedAdminOrDevPosts(pageable);
+	}
+
 
 	@PutMapping("/{id}")
 	public PostDto update(@PathVariable UUID id, @RequestBody PostInputDto input) {
@@ -87,6 +93,12 @@ public class PostController {
 	public PostDto pin(@PathVariable UUID id, @RequestParam Boolean isPinned) {
 
 		return new PostDto(postService.pin(id, isPinned));
+	}
+
+	@PatchMapping("/{id}/block")
+	public PostDto block(@PathVariable UUID id, @RequestParam Boolean isBlocked) {
+
+		return new PostDto(postService.blockPost(id, isBlocked));
 	}
 
 }

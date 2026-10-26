@@ -7,8 +7,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.justen.social.domain.exception.BusinessException;
-import com.justen.social.domain.exception.EntityNotFoundException;
+import com.infrastructure.shared.domain.exception.BusinessException;
+import com.infrastructure.shared.domain.exception.EntityNotFoundException;
 import com.justen.social.domain.model.Comment;
 import com.justen.social.domain.model.CommentLike;
 import com.justen.social.domain.model.Profile;

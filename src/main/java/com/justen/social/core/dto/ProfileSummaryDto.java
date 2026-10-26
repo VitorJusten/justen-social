@@ -24,6 +24,8 @@ public class ProfileSummaryDto {
 	private ProfileStatusEnum status;
 	private byte[] perfilImage;
 	private String userName;
+	private UUID userId;
+	private Boolean blocked = false;
 
 	public ProfileSummaryDto(Profile profile) {
 		if (profile != null) {
@@ -32,6 +34,8 @@ public class ProfileSummaryDto {
 			this.status = profile.getStatus();
 			this.perfilImage = profile.getPerfilImage();
 			this.userName = profile.getUserName();
+			this.userId = profile.getUserId();
+			this.blocked = profile.getBlocked() != null ? profile.getBlocked() : false;
 		}
 	}
 

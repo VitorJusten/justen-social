@@ -29,6 +29,7 @@ public class ProfileDto {
 	private OffsetDateTime updatedAt;
 	private String userName;
 	private UUID userId;
+	private Boolean blocked = false;
 
 	public ProfileDto(Profile profile) {
 		this.id = profile.getId();
@@ -40,6 +41,7 @@ public class ProfileDto {
 		this.updatedAt = profile.getUpdatedAt();
 		this.userName = profile.getUserName();
 		this.userId = profile.getUserId();
+		this.blocked = profile.getBlocked() != null ? profile.getBlocked() : false;
 	}
 
 }

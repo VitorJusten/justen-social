@@ -54,6 +54,9 @@ public class Post {
 	@Column(name = "post_nm_fixed", nullable = false)
 	private Boolean fixed = false;
 
+	@Column(name = "post_nm_blocked", nullable = false)
+	private Boolean blocked = false;
+
 	@Column(name = "post_dt_created_at", nullable = false)
 	private OffsetDateTime createdAt;
 
@@ -69,6 +72,9 @@ public class Post {
 
     @Column(name = "post_nm_comments_count", nullable = false)
     private Long commentsCount = 0L;
+
+    @Column(name = "post_nm_views", nullable = false)
+    private Long views = 0L;
 	
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

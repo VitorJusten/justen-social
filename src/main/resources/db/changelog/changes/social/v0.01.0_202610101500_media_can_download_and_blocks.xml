@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v0.01.0_media_can_download_and_blocks" author="Vitor Justen">
+
+        <comment>Add can_download and file_name to media, blocked to post, blocked to profile</comment>
+
+        <sql>
+            <![CDATA[
+
+            -- =========================================
+            -- COLUNAS: media
+            -- =========================================
+            ALTER TABLE media
+                ADD COLUMN IF NOT EXISTS medi_nm_can_download BOOLEAN NOT NULL DEFAULT TRUE;
+
+            ALTER TABLE media
+                ADD COLUMN IF NOT EXISTS medi_tx_file_name VARCHAR(255);
+
+            -- =========================================
+            -- COLUNA: post bloqueado
+            -- =========================================
+            ALTER TABLE post
+                ADD COLUMN IF NOT EXISTS post_nm_blocked BOOLEAN NOT NULL DEFAULT FALSE;
+
+            -- =========================================
+            -- COLUNA: profile bloqueado
+            -- =========================================
+            ALTER TABLE profile
+                ADD COLUMN IF NOT EXISTS prof_nm_blocked BOOLEAN NOT NULL DEFAULT FALSE;
+
+            ]]>
+        </sql>
+
+        <rollback>
+            <![CDATA[
+
+            ALTER TABLE media
+                DROP COLUMN IF EXISTS medi_nm_can_download;
+
+            ALTER TABLE media
+                DROP COLUMN IF EXISTS medi_tx_file_name;
+
+            ALTER TABLE post
+                DROP COLUMN IF EXISTS post_nm_blocked;
+
+            ALTER TABLE profile
+                DROP COLUMN IF EXISTS prof_nm_blocked;
+
+            ]]>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
